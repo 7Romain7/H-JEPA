@@ -1,0 +1,36 @@
+# Environnements virtuels Python
+.venv/
+venv/
+env/
+psc_env/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Notebooks Jupyter
+.ipynb_checkpoints/
+
+# Données, checkpoints, logs d'entraînement (souvent lourds, à ne jamais mettre sur git)
+# Ancré à la racine (/data/) pour ne PAS ignorer scripts/train/config/data/,
+# qui contient les configs Hydra des datasets (pusht.yaml, ogb.yaml, ...),
+# pas des données elles-mêmes.
+/data/
+/datasets/
+*.ckpt
+*.pt
+*.pth
+wandb/
+outputs/
+lightning_logs/
+checkpoints/
+
+# Répertoire de cache de stable-worldmodel
+.stable_worldmodel/
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
