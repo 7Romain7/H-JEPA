@@ -184,6 +184,20 @@ def load_model(cfg: DictConfig, model=None):
             model = torch.load(ckpt_path, map_location="cpu", weights_only=False)
         else:
             model = swm.policy.AutoCostModel(cfg.policy)
+            head_spec = cfg.get("cost_head", None)
+            if head_spec not in (None, "l2"):
+                # Planning cost measured by a cost head (cost_heads.py) instead of the
+                # level-1 MSE; rollout, solver and protocol unchanged.
+                from cost_heads import build_head, install_cost_head
+
+                hjepa = None
+                if head_spec == "level2":
+                    ckpt_path = resolve_model_checkpoint_path(cfg.policy, cfg.get("cache_dir"))
+                    hjepa = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+                head = build_head(head_spec, hjepa).eval()
+                for p in head.parameters():
+                    p.requires_grad_(False)
+                install_cost_head(model, head)
 
         model = model.to("cuda")
     elif not _is_hierarchical_solver(cfg):
