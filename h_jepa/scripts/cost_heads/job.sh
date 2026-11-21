@@ -26,11 +26,11 @@ case $kind in
     rm -rf "$TMP"
     ;;
   plan)
-    config=$1; seed=$2; head=$3; name=$4
+    config=$1; seed=$2; head=$3; name=$4; shift 4   # remaining args: extra Hydra overrides
     # a trained head name (heads/<name>/seed<seed>/head.pt) instead of l2 / level2 / a path
     if [ -f "$H/heads/$head/seed$seed/head.pt" ]; then head="$H/heads/$head/seed$seed/head.pt"; fi
     python eval.py --config-name "$config" seed="$seed" policy="$(ckpt "$seed")" \
-      ++cost_head="$head" output.dir="$H/results/plan/$name/seed$seed"
+      ++cost_head="$head" output.dir="$H/results/plan/$name/seed$seed" "$@"
     ;;
   train)
     seed=$1; name=$2; shift 2
