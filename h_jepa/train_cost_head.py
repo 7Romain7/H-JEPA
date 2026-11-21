@@ -117,9 +117,10 @@ def main():
     p.add_argument('--tau', type=float, default=0.005)
     p.add_argument('--p-cur', type=float, default=0.2)
     p.add_argument('--p-traj', type=float, default=0.5)
+    p.add_argument('--device', default='cuda')
     a = p.parse_args()
 
-    dev = 'cuda'
+    dev = a.device
     torch.manual_seed(a.train_seed)
     gen = torch.Generator(device=dev).manual_seed(a.train_seed)
     lat = Latents(a.latents, a.seed).to(dev)

@@ -70,8 +70,9 @@ def main():
     p.add_argument('--goal-steps', type=int, default=15)
     p.add_argument('--start-stride', type=int, default=1)
     p.add_argument('--out', required=True)
+    p.add_argument('--device', default='cuda')
     a = p.parse_args()
-    dev = 'cuda'
+    dev = a.device
 
     ckpt = Path(a.ckpt_dir) / f'seed{a.seed}' / f'{Path(a.ckpt_dir).name}_object.ckpt'
     hjepa = load_hjepa(ckpt, dev)
