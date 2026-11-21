@@ -39,10 +39,19 @@ class CEMSolver(torch.nn.Module):
         batch_size: int | None = None,
         device: str | torch.device = 'cpu',
         seed: int = 1234,
+        momentum: float = 0.0,
+        keep_elites: int = 0,
+        min_std: float = 0.0,
         **unused: Any,
     ) -> None:
         super().__init__()
         self.model = model
+        # momentum: mean/std <- momentum * old + (1 - momentum) * elite statistics
+        # keep_elites: the best keep_elites sequences of the previous iteration are re-evaluated
+        # among the candidates (iCEM, Pinneri et al. 2020)
+        self.momentum = float(momentum)
+        self.keep_elites = int(keep_elites)
+        self.min_std = float(min_std)
         self.num_samples = int(num_samples)
         self.n_steps = int(n_steps)
         self.topk = int(topk)
@@ -134,10 +143,14 @@ class CEMSolver(torch.nn.Module):
                 mean[:, :k] = init_action[start:end, :k].to(self.device)
             std = torch.full((cur, H, A), self.var_scale, device=self.device)
             infos = self._expand(info_dict, start, end, self.num_samples)
+            prev_elites = None
             for _ in range(self.n_steps):
                 cand = torch.randn(cur, self.num_samples, H, A, generator=self.torch_gen,
                                    device=self.device) * std.unsqueeze(1) + mean.unsqueeze(1)
                 cand[:, 0] = mean
+                if prev_elites is not None and self.keep_elites > 0:
+                    k = min(self.keep_elites, prev_elites.shape[1], self.num_samples - 1)
+                    cand[:, 1:1 + k] = prev_elites[:, :k]
                 info = dict(infos)
                 info['cost_last_n'] = cost_last_n
                 info['intermediate_cost_weight'] = intermediate_cost_weight
@@ -147,10 +160,14 @@ class CEMSolver(torch.nn.Module):
                         infos.setdefault(key, info[key])
                 assert costs.shape == (cur, self.num_samples), costs.shape
                 idx = torch.topk(costs, k=self.topk, dim=1, largest=False).indices
-                elites = cand[torch.arange(cur, device=self.device)[:, None], idx]
-                mean = elites.mean(dim=1)
-                std = elites.std(dim=1, correction=0)
-            best_actions.append(mean.cpu())
+                elites = cand[torch.arange(cur, device=self.device)[:, None], idx]  # sorted by cost
+                best = elites[:, 0]
+                prev_elites = elites
+                m = self.momentum
+                mean = m * mean + (1 - m) * elites.mean(dim=1)
+                std = (m * std + (1 - m) * elites.std(dim=1, correction=0)).clamp_min(self.min_std)
+            # best sequence seen in the last iteration (the mean is among the candidates)
+            best_actions.append(best.cpu())
         outputs = {'actions': torch.cat(best_actions, dim=0)}
         outputs['predictions'] = self._rollout_final_actions(info_dict, outputs['actions'])
         wall = time.time() - t0

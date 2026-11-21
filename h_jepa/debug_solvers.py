@@ -43,8 +43,15 @@ def main():
         'gd': GradientSolver(jepa, n_steps=90, num_samples=800, var_scale=1.0, device=dev, seed=0,
                              optimizer_cls=torch.optim.AdamW, optimizer_kwargs={'lr': 0.05}),
         'cem300': CEMSolver(jepa, num_samples=300, n_steps=30, topk=30, device=dev, seed=0),
-        'cem1000_v0.5': CEMSolver(jepa, num_samples=1000, n_steps=30, topk=100, var_scale=0.5,
-                                  device=dev, seed=0),
+        'cem1000': CEMSolver(jepa, num_samples=1000, n_steps=30, topk=100, device=dev, seed=0),
+        'cem1000_m.5_k10': CEMSolver(jepa, num_samples=1000, n_steps=30, topk=100, momentum=0.5,
+                                     keep_elites=10, device=dev, seed=0),
+        'cem1000_it90_m.5_k10': CEMSolver(jepa, num_samples=1000, n_steps=90, topk=50, momentum=0.5,
+                                          keep_elites=10, device=dev, seed=0),
+        'cem3000_m.3_k30': CEMSolver(jepa, num_samples=3000, n_steps=30, topk=300, momentum=0.3,
+                                     keep_elites=30, device=dev, seed=0),
+        'cem3000_it60_m.5_k30': CEMSolver(jepa, num_samples=3000, n_steps=60, topk=100, momentum=0.5,
+                                          keep_elites=30, device=dev, seed=0),
     }
     for s in solvers.values():
         s.configure(action_space=space, n_envs=1, config=cfg)
