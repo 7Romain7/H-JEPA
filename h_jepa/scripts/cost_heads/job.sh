@@ -22,7 +22,7 @@ case $kind in
       unzstd -q -f --rm "$TMP/train.h5.zst" -o "$TMP/pusht_expert_train.h5"
     fi
     python encode_latents.py --h5 "$TMP/pusht_expert_train.h5" --out "$H/latents/pusht_train" \
-      --ckpt-dir "$CKPT_DIR" --seeds 42 43 44 --max-episodes "${MAX_EPISODES:-6000}"
+      --ckpt-dir "$CKPT_DIR" --seeds 42 43 44 --max-episodes "${MAX_EPISODES:-4000}"
     rm -rf "$TMP"
     ;;
   plan)
