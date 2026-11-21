@@ -96,7 +96,7 @@ def main():
     rank_z = None
     if a.rank_latents:
         zt = np.load(Path(a.rank_latents) / f'latents_seed{a.seed}.npy', mmap_mode='r')
-        idx = np.sort(np.random.default_rng(0).choice(len(zt), 10000, replace=False))
+        idx = np.sort(np.random.default_rng(0).choice(len(zt), min(10000, len(zt)), replace=False))
         rank_z = torch.as_tensor(np.asarray(zt[idx], dtype=np.float32), device=dev)
 
     results = {'seed': a.seed, 'goal_steps': T, 'n_segments': len(starts),
