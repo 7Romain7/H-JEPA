@@ -51,9 +51,9 @@ case $kind in
   pipe)
     # pipe <seed> <name> <train args...>: train the head, diagnose it, plan with GD (pusht_flat)
     seed=$1; name=$2; shift 2
-    "$SELF" train "$seed" "$name" "$@"
-    "$SELF" diag "$seed" "tag=$name" "$name=$H/heads/$name/seed$seed/head.pt"
-    "$SELF" plan pusht_flat "$seed" "$name" "gd_$name"
+    bash "$SELF" train "$seed" "$name" "$@"
+    bash "$SELF" diag "$seed" "tag=$name" "$name=$H/heads/$name/seed$seed/head.pt"
+    bash "$SELF" plan pusht_flat "$seed" "$name" "gd_$name"
     ;;
   *) echo "unknown job kind $kind"; exit 2 ;;
 esac
