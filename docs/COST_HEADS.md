@@ -80,6 +80,17 @@ CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajou
   le bruit.
 
 
+## Checkpoints
+
+- **World model gelé** : checkpoints publiés `pusht_hjepa_l2` (seeds 42/43/44), téléchargés par
+  `hjepa_setup.sh` (non versionnés ici).
+- **Têtes entraînées** : `checkpoints/cost_heads/pusht/<tête>/seed<s>/` (24 têtes, 54 Mo), avec
+  `head.pt` (module complet, `torch.save`), `args.json` (hyperparamètres) et `metrics.jsonl`
+  (pertes et effective rank pendant l'entraînement). La seed de la tête = la seed du world model
+  dont elle utilise les latents. Chargement : `build_head('<chemin>/head.pt')` (`h_jepa/cost_heads.py`,
+  nécessite `h_jepa` dans le `PYTHONPATH`). Pour planifier avec une tête :
+  `bash h_jepa/scripts/cost_heads/job.sh plan pusht_flat <seed> <chemin>/head.pt <nom>`.
+
 ## Reproduire
 
 ```bash

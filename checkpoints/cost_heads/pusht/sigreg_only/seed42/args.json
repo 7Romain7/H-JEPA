@@ -1,0 +1,22 @@
+{
+ "latents": "/users/eleves-a/2025/joachim.bertrand/psc/hjepa_home/latents/pusht_train",
+ "seed": 42,
+ "head": "straight",
+ "out": "/users/eleves-a/2025/joachim.bertrand/psc/hjepa_home/heads/sigreg_only/seed42",
+ "steps": 30000,
+ "batch": 1024,
+ "lr": 0.0003,
+ "log_every": 1000,
+ "train_seed": 0,
+ "out_dim": 128,
+ "curv": 0.0,
+ "sigreg": 1.0,
+ "qrl_offset": 50.0,
+ "qrl_beta": 0.1,
+ "qrl_eps": 0.25,
+ "gamma": 0.99,
+ "expectile": 0.9,
+ "tau": 0.005,
+ "p_cur": 0.2,
+ "p_traj": 0.5
+}
