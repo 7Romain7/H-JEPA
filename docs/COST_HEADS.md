@@ -1,11 +1,48 @@
 # Têtes de coût pour la planification latente (Push-T)
 
-Branche `cost-heads`. On garde un world model H-JEPA **gelé** (2 niveaux, checkpoints publiés
-`pusht_hjepa_l2`, seeds 42/43/44) et on ne change que le **coût de planification**
-c(ẑ, z_goal) que le planificateur minimise. Toutes les têtes passent par le même planificateur
-plat de niveau 1 (rollout du prédicteur de niveau 1, horizon 15 pas modèle, `cost_last_n` 2,
-replanification toutes les 10 actions, budget 90 actions, 50 tâches fixes
-`goal_offset_75_val`, but à 75 pas d'env).
+Branche `cost-heads`.
+
+## Principe
+
+On part d'un world model H-JEPA **gelé** : l'encodeur et le prédicteur ne sont jamais
+réentraînés. Ce sont les checkpoints publiés `pusht_hjepa_l2`, seeds 42/43/44.
+
+**Ce qui change d'une ligne du tableau à l'autre, c'est l'espace dans lequel on mesure la
+distance au but.** La procédure de planification reste la même :
+
+1. on propose une séquence d'actions sur 15 pas ;
+2. le prédicteur de niveau 1 prédit l'état final ẑ ;
+3. on mesure la distance entre ẑ et le latent du but g ;
+4. on ajuste les actions pour réduire cette distance (descente de gradient ou CEM) ;
+5. on exécute les premières actions, puis on recommence.
+
+Par défaut, la distance est ‖ẑ − g‖² dans l'espace latent z de l'encodeur. C'est la baseline L2.
+
+**Une « tête »** est un petit réseau h posé au-dessus de l'encodeur gelé. Il envoie z vers un
+nouvel espace, et la distance devient ‖h(ẑ) − h(g)‖². On entraîne h après coup, sur les latents
+du world model gelé, avec une loss propre à chaque méthode. Pour le straightening, c'est L_curv
+(trajectoires droites dans l'espace de h) + SIGReg (contre le collapse). **Cette loss ne sert
+qu'à façonner l'espace de h : elle n'est jamais calculée pendant la planification.** En
+planification, on minimise toujours une distance au but.
+
+**Différence avec l'article Temporal Straightening.** Dans l'article, L_curv est ajoutée à
+l'entraînement du world model lui-même : l'encodeur et le prédicteur apprennent ensemble dans
+l'espace redressé. Ici, le world model est gelé, comme le demande le protocole, et on redresse
+après coup avec une tête. Le prédicteur prédit donc toujours dans l'espace z d'origine, et h
+est appliquée à ses prédictions. C'est une version post-hoc du straightening, pas la méthode
+de l'article.
+
+**Planificateur « plat ».** H-JEPA a deux niveaux. Le niveau 1 est le prédicteur pas à pas ;
+le niveau 2 est un niveau plus abstrait, qui peut fixer des sous-buts. Ici, on n'utilise pas la
+hiérarchie : toutes les lignes planifient avec le seul prédicteur de niveau 1. La ligne
+« latent niveau 2 » se sert de l'encodeur de niveau 2 uniquement comme espace de distance,
+comme une tête qu'on n'aurait pas besoin d'entraîner.
+
+Réglages communs :
+- horizon de 15 pas modèle ;
+- distance calculée sur les 2 derniers pas prédits (`cost_last_n`) ;
+- replanification toutes les 10 actions, budget de 90 actions ;
+- 50 tâches fixes `goal_offset_75_val`, but à 75 pas d'env.
 
 ## Têtes
 
