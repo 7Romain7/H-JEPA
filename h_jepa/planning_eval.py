@@ -190,10 +190,9 @@ def load_model(cfg: DictConfig, model=None):
                 # level-1 MSE; rollout, solver and protocol unchanged.
                 from cost_heads import build_head, install_cost_head
 
-                hjepa = None
-                if head_spec == "level2":
-                    ckpt_path = resolve_model_checkpoint_path(cfg.policy, cfg.get("cache_dir"))
-                    hjepa = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+                # full HJEPA: level2 and heads trained on level-2 latents use its level-2 encoder
+                ckpt_path = resolve_model_checkpoint_path(cfg.policy, cfg.get("cache_dir"))
+                hjepa = torch.load(ckpt_path, map_location="cpu", weights_only=False)
                 head = build_head(head_spec, hjepa).eval()
                 for p in head.parameters():
                     p.requires_grad_(False)

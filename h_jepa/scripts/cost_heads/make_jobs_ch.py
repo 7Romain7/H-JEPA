@@ -4,6 +4,8 @@
   B : entrainement des tetes (apres A/encode)
   C : diagnostic offline de toutes les tetes (apres B)
   D : planification CEM (+ GD) des tetes retenues : python make_jobs_ch.py D --heads straight_c1_s0.01 level2
+  E : tetes entrainees sur le latent de niveau 2 (lv2_*) : entrainement + diagnostic + GD en un job,
+      et GD des tetes QRL / GCIVL de niveau 1
 
 Ecrit jobs_ch_<phase>.txt. Lancement :
   $env:PSC_REMOTE_CODE="~/psc/hjepa"; $env:PSC_REMOTE_VENV="~/psc/hjepa_env"
@@ -25,11 +27,15 @@ HEADS = {  # nom -> arguments de train_cost_head.py
     'qrl': '--head qrl --steps 100000',
     'gcivl': '--head gcivl --steps 100000',
 }
+LV2_HEADS = {  # tetes sur E2(z), E2 encodeur de niveau 2 gele
+    f'lv2_{n}': HEADS[n] + ' --level2'
+    for n in ['straight_c1_s0.001', 'straight_c1_s0.01', 'straight_c1_s0.1', 'sigreg_only', 'qrl', 'gcivl']
+}
 
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('phase', choices=list('ABCD'))
+    p.add_argument('phase', choices=list('ABCDE'))
     p.add_argument('--heads', nargs='*', default=[])
     p.add_argument('--gd', action='store_true', help='phase D : aussi le planificateur GD (AdamW)')
     a = p.parse_args()
@@ -48,6 +54,13 @@ def main():
             f'{n}=$HJEPA_HOME/heads/{n}/seed{{s}}/head.pt' for n in HEADS]
         for s in SEEDS:
             lines.append(f'ch_diag_s{s} | {J} diag {s} ' + ' '.join(x.format(s=s) for x in specs))
+    elif a.phase == 'E':
+        for name, args in LV2_HEADS.items():
+            for s in SEEDS:
+                lines.append(f'ch_pipe_{name}_s{s} | {J} pipe {s} {name} {args}')
+        for h in ['qrl', 'gcivl']:
+            for s in SEEDS:
+                lines.append(f'ch_gd_{h}_s{s} | {J} plan pusht_flat {s} {h} gd_{h}')
     else:
         for h in a.heads:
             for s in SEEDS:

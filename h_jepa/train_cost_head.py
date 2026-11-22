@@ -21,8 +21,8 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-from cost_heads import GCIVLHead, ProjHead, QRLHead, effective_rank
-from cost_heads_data import FRAMESKIP, Latents
+from cost_heads import GCIVLHead, Level2Head, ProjHead, QRLHead, effective_rank
+from cost_heads_data import FRAMESKIP, Latents, load_hjepa
 from loss import SIGReg
 
 S = FRAMESKIP
@@ -118,12 +118,23 @@ def main():
     p.add_argument('--p-cur', type=float, default=0.2)
     p.add_argument('--p-traj', type=float, default=0.5)
     p.add_argument('--device', default='cuda')
+    p.add_argument('--level2', action='store_true',
+                   help='train on level-2 latents E2(z) (E2 frozen level-2 encoder of --ckpt)')
+    p.add_argument('--ckpt', default=None, help='H-JEPA checkpoint of this seed (for --level2)')
     a = p.parse_args()
 
     dev = a.device
     torch.manual_seed(a.train_seed)
     gen = torch.Generator(device=dev).manual_seed(a.train_seed)
     lat = Latents(a.latents, a.seed).to(dev)
+    if a.level2:
+        hjepa = load_hjepa(a.ckpt, dev)
+        e2 = Level2Head(hjepa.jepas[1]).eval()
+        with torch.no_grad():
+            lat.z = torch.cat([e2.embed(lat.z[k:k + 65536]).float()
+                               for k in range(0, lat.z.shape[0], 65536)])
+        del hjepa, e2
+        print('level-2 latents', tuple(lat.z.shape), flush=True)
     D = lat.z.shape[1]
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -178,6 +189,7 @@ def main():
             log.flush()
             print(rec, flush=True)
     head.eval()
+    head.on_level2 = a.level2  # build_head wraps it with the level-2 encoder
     torch.save(head.cpu(), out / 'head.pt')
     print('saved', out / 'head.pt')
 

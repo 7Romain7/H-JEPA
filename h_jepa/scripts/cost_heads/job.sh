@@ -6,6 +6,7 @@
 #   job.sh diag <seed> <name=spec>...              offline diagnostic (step 2)
 # Needs HJEPA_HOME (checkpoints, val set, eval tasks, latents, heads, results).
 set -euo pipefail
+SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
 cd "$(dirname "$0")/../.."   # h_jepa/
 H=${HJEPA_HOME:?HJEPA_HOME not set}
 CKPT_DIR=$H/ckpts/pusht/pusht_hjepa_l2
@@ -35,14 +36,24 @@ case $kind in
   train)
     seed=$1; name=$2; shift 2
     python train_cost_head.py --latents "$H/latents/pusht_train" --seed "$seed" \
-      --out "$H/heads/$name/seed$seed" "$@"
+      --ckpt "$(ckpt "$seed")" --out "$H/heads/$name/seed$seed" "$@"
     ;;
   diag)
+    # diag <seed> [tag=<tag>] <name=spec>... -> results/diag/seed<seed>[_<tag>].json
     seed=$1; shift
+    tag=""
+    if [[ "${1:-}" == tag=* ]]; then tag="_${1#tag=}"; shift; fi
     args=()
     for spec in "$@"; do args+=(--head "$spec"); done
     python cost_diagnostic.py --ckpt-dir "$CKPT_DIR" --seed "$seed" --val-h5 "$H/pusht_expert_val.h5" \
-      --rank-latents "$H/latents/pusht_train" --out "$H/results/diag/seed$seed.json" "${args[@]}"
+      --rank-latents "$H/latents/pusht_train" --out "$H/results/diag/seed$seed$tag.json" "${args[@]}"
+    ;;
+  pipe)
+    # pipe <seed> <name> <train args...>: train the head, diagnose it, plan with GD (pusht_flat)
+    seed=$1; name=$2; shift 2
+    "$SELF" train "$seed" "$name" "$@"
+    "$SELF" diag "$seed" "tag=$name" "$name=$H/heads/$name/seed$seed/head.pt"
+    "$SELF" plan pusht_flat "$seed" "$name" "gd_$name"
     ;;
   *) echo "unknown job kind $kind"; exit 2 ;;
 esac

@@ -171,10 +171,32 @@ def install_cost_head(jepa, head: CostHead):
     return jepa
 
 
+class OnLevel2(CostHead):
+    """A head trained on level-2 latents: cost = inner(E2(z), E2(g)), E2 the frozen level-2 encoder."""
+    name = 'on_level2'
+
+    def __init__(self, level2: Level2Head, inner: CostHead):
+        super().__init__()
+        self.level2 = level2
+        self.inner = inner
+
+    def embed(self, z):
+        return self.inner.embed(self.level2.embed(z))
+
+    def pair_cost(self, z, g):
+        return self.inner.pair_cost(self.level2.embed(z), self.level2.embed(g))
+
+
 def build_head(spec: str, hjepa=None, device='cpu'):
-    """spec: 'l2', 'level2' (needs the full HJEPA), or a path to a saved head (torch.save)."""
+    """spec: 'l2', 'level2' (needs the full HJEPA), or a path to a saved head (torch.save).
+    A saved head with on_level2=True was trained on level-2 latents and is wrapped in OnLevel2
+    (needs the full HJEPA)."""
     if spec == 'l2':
         return L2Head()
     if spec == 'level2':
         return Level2Head(hjepa.jepas[1])
-    return torch.load(spec, map_location=device, weights_only=False)
+    head = torch.load(spec, map_location=device, weights_only=False)
+    if getattr(head, 'on_level2', False):
+        assert hjepa is not None, 'a level-2 head needs the full HJEPA'
+        head = OnLevel2(Level2Head(hjepa.jepas[1]), head)
+    return head

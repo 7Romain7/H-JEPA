@@ -13,10 +13,12 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-ORDER = ['L2', 'level2', 'straight_c1_s0', 'straight_c1_s0.001', 'straight_c1_s0.01',
-         'straight_c1_s0.1', 'straight_c1_s1', 'sigreg_only', 'qrl', 'gcivl']
+BASE = ['straight_c1_s0', 'straight_c1_s0.001', 'straight_c1_s0.01', 'straight_c1_s0.1',
+        'straight_c1_s1', 'sigreg_only', 'qrl', 'gcivl']
+ORDER = ['L2', 'level2'] + BASE + [f'lv2_{n}' for n in BASE]
 LABEL = {'L2': 'L2 (latent niveau 1)', 'level2': 'latent niveau 2 H-JEPA (d)',
          'sigreg_only': 'SIGReg seul (contrôle)', 'qrl': 'QRL (b)', 'gcivl': 'GCIVL (c)'}
+LABEL.update({f'lv2_{n}': f'niveau 2 + {LABEL.get(n, n)}' for n in BASE})
 PLAN_NAME = {'L2': 'l2', 'level2': 'level2'}
 
 
@@ -31,7 +33,15 @@ def fmt(xs, pct=False, nd=2):
 
 def main(root):
     root = Path(root)
-    diags = [json.loads(p.read_text()) for p in sorted((root / 'diag').glob('seed*.json'))]
+    # one dict per model seed, merging seed<s>.json and seed<s>_<tag>.json
+    by_seed = {}
+    for p in sorted((root / 'diag').glob('seed*.json')):
+        d = json.loads(p.read_text())
+        if d['seed'] in by_seed:
+            by_seed[d['seed']]['heads'].update(d['heads'])
+        else:
+            by_seed[d['seed']] = d
+    diags = [by_seed[s] for s in sorted(by_seed)]
     names = [n for n in ORDER if any(n in d['heads'] for d in diags)]
     names += sorted({n for d in diags for n in d['heads']} - set(names))
     print(f'Push-T, {len(diags)} seeds de modèle, {diags[0]["n_segments"] if diags else 0} segments '
