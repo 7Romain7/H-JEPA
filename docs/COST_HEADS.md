@@ -68,14 +68,16 @@ CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajou
   élevé (λ 0,01 : 28,7 % ; λ 0,1 : 21,3 %) ne rattrapent pas L2. Le Spearman le long de
   trajectoires expertes ne mesure pas si le coût sépare des états hors de ces trajectoires, que
   l'optimiseur visite.
-- **Latent de niveau 2 (d)** : meilleur des coûts appris ou projetés partout (diagnostic et
-  planification), 43,3 % en GD, 23,3 % en iCEM.
+- **Latent de niveau 2 (d)** : meilleur coût en planification avec les trois planificateurs
+  (43,3 % en GD, 23,3 % en iCEM), et 2ᵉ au diagnostic sur latents prédits parmi les têtes non
+  effondrées (0,55).
 - **QRL / GCIVL** : excellents sur latents encodés (0,83 / 0,88), beaucoup moins sur latents
   prédits (0,46 / 0,33) : ils ne se transfèrent pas aux états issus du prédicteur.
 - **CEM.** Sur ce problème (horizon 15 × 10 dimensions d'action), le CEM optimise bien moins que
   le GD : coût prédit médian atteint sur 16 segments val 380 (CEM-300) et 274 (iCEM-3000), contre
-  47 (GD) et 258 (actions expertes) (`debug_solvers.py`). Le classement des coûts reste le même
-  sous les deux planificateurs.
+  47 (GD) et 258 (actions expertes) (`debug_solvers.py`). iCEM et GD classent les trois coûts
+  évalués dans le même ordre (niveau 2 > L2 ≥ straightening) ; en CEM-300 les écarts sont dans
+  le bruit.
 
 
 ## Reproduire
