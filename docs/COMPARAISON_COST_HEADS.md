@@ -3,8 +3,8 @@
 Branche `cost-heads-romain`, construite sur `cost-heads`.
 
 Deux d'entre nous ont suivi le même protocole du tuteur sans se concerter. Ce
-document met les deux travaux côte à côte pour savoir ce qui se recoupe, ce qui
-diverge et ce que chacun apporte que l'autre n'a pas.
+document met les deux travaux côte à côte pour repérer ce qui se recoupe et ce
+que chacun apporte que l'autre n'a pas.
 
 | | Implémentation A | Implémentation B |
 |---|---|---|
@@ -58,11 +58,10 @@ Spearman calculé segment par segment puis moyenné, à 15 pas latents du goal.
 | QRL | 0,83 | 0,77 | 0,46 | 0,39 | 0,63 | 0,62 | 9 / 512 | |
 | GCIVL | 0,88 | 0,85 | 0,33 | 0,23 | 0,62 | 0,62 | | |
 
-Les deux implémentations donnent le même classement. Le straightening avec un
-SIGReg faible arrive en tête sur les latents prédits, le contrôle « SIGReg seul »
-est le plus mauvais, QRL et GCIVL sont excellents sur les latents encodés puis
-perdent leur avance sur les latents prédits. L'effondrement sans SIGReg est
-observé des deux côtés.
+Les deux implémentations donnent le même classement. Sur les latents prédits le
+straightening avec un SIGReg faible arrive en tête et le contrôle « SIGReg seul »
+en dernier. QRL et GCIVL, excellents sur les latents encodés, y perdent leur
+avance. L'effondrement du projector sans SIGReg est observé des deux côtés.
 
 Les valeurs absolues de A sont plus élevées sur les latents prédits, de 0,05 à
 0,14. Les world models ne sont pas les mêmes et les têtes de A sont entraînées
@@ -84,9 +83,9 @@ Success rate en pourcentage, 50 tâches par seed.
 | corde, SIGReg 0,01 | | 33,3 ± 4,8 |
 | QRL | | 8,7 ± 1,8 |
 
-Les deux lignes L2 ne mesurent pas le même world model. Celle de A est le niveau
-1 d'un H-JEPA à deux niveaux, celle de B est LeWM. La ligne 3d est en revanche la
-même expérience des deux côtés, lancée par deux chemins différents. Les deux
+Les deux lignes L2 ne mesurent pas le même world model, puisque A gèle le
+niveau 1 d'un H-JEPA à deux niveaux quand B gèle LeWM. La ligne 3d est en
+revanche la même expérience lancée par deux chemins différents, dont les
 résultats s'accordent.
 
 Aucune tête entraînée ne bat le L2 dans l'une ou l'autre implémentation. La
@@ -94,9 +93,9 @@ variante « corde » de B est celle qui s'en approche le plus. Elle gagne 30 cou
 (tâche, seed) sur 150 face au L2 et en perd 37, ce qui montre qu'elle ne réussit
 pas les mêmes tâches.
 
-A apporte un résultat que B n'a pas. Avec CEM-300 et iCEM-3000 le classement des
-coûts reste le même qu'en GD alors que le CEM optimise beaucoup moins bien le
-coût prédit.
+A a aussi évalué CEM-300 et iCEM-3000, ce que B n'a pas fait. Le classement des
+coûts y reste celui du GD alors que le CEM optimise beaucoup moins bien le coût
+prédit.
 
 ## Cube : ce que seule B a mesuré
 
@@ -140,10 +139,10 @@ la position et l'angle du cube, il reste à le détailler par composante.
 
 Le diagnostic offline de l'étape 2 ne prédit pas le succès en planning. Ce constat
 tient avec deux world models, deux réglages de têtes, deux environnements et
-trois planners. `docs/COST_HEADS.md` en donne une explication : le Spearman le
+trois planners. `docs/COST_HEADS.md` l'explique par le fait que le Spearman le
 long de trajectoires expertes ne dit rien des états que l'optimiseur visite hors
-de ces trajectoires. Le linear probe en suggère une seconde, propre à
-l'information sur l'objet, qui est mal portée par les latents prédits.
+de ces trajectoires. Le linear probe suggère une seconde cause, l'information sur
+l'objet étant mal portée par les latents prédits.
 
 Le coût dans le latent de niveau 2 est le seul à égaler ou dépasser le L2 sur
 Push-T dans les deux implémentations. Sur Cube il fait nettement moins bien.
