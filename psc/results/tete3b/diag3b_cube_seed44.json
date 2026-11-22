@@ -1,0 +1,193 @@
+{
+  "ckpt": "$PSC_ROOT/data/ckpts/cube/cube_lewm/seed44/cube_lewm_object.ckpt",
+  "h5": "$PSC_ROOT/data/cube_single_expert_val.h5",
+  "episodes": 200,
+  "offsets": {
+    "15": {
+      "fenetres": 5000,
+      "ecart_predit_encode_relatif": 0.07314113081421837,
+      "couts": {
+        "l2": {
+          "encode": {
+            "spearman_pooled": 0.45027708388257986,
+            "spearman_par_fenetre": 0.46301362637362636,
+            "monotonicite": 0.6472153846153845,
+            "fenetres_parfaitement_monotones": 0.0014
+          },
+          "predit": {
+            "spearman_pooled": 0.42662586121596624,
+            "spearman_par_fenetre": 0.444312967032967,
+            "monotonicite": 0.640676923076923,
+            "fenetres_parfaitement_monotones": 0.0008
+          }
+        },
+        "qrl": {
+          "encode": {
+            "spearman_pooled": 0.4906550967184777,
+            "spearman_par_fenetre": 0.5207138461538461,
+            "monotonicite": 0.7075384615384616,
+            "fenetres_parfaitement_monotones": 0.1358
+          },
+          "predit": {
+            "spearman_pooled": 0.42413987863133207,
+            "spearman_par_fenetre": 0.48418901098901107,
+            "monotonicite": 0.6879384615384615,
+            "fenetres_parfaitement_monotones": 0.1104
+          }
+        },
+        "corde_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.4697866214211533,
+            "spearman_par_fenetre": 0.5003208791208792,
+            "monotonicite": 0.7028923076923076,
+            "fenetres_parfaitement_monotones": 0.134
+          },
+          "predit": {
+            "spearman_pooled": 0.44763797965714996,
+            "spearman_par_fenetre": 0.4886347252747253,
+            "monotonicite": 0.6982615384615385,
+            "fenetres_parfaitement_monotones": 0.124
+          }
+        },
+        "consecutif_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.4457549568232765,
+            "spearman_par_fenetre": 0.48996923076923077,
+            "monotonicite": 0.6940461538461538,
+            "fenetres_parfaitement_monotones": 0.1336
+          },
+          "predit": {
+            "spearman_pooled": 0.43456653051881655,
+            "spearman_par_fenetre": 0.4845951648351648,
+            "monotonicite": 0.6950307692307691,
+            "fenetres_parfaitement_monotones": 0.1374
+          }
+        }
+      }
+    },
+    "8": {
+      "fenetres": 6400,
+      "ecart_predit_encode_relatif": 0.044050961327431,
+      "couts": {
+        "l2": {
+          "encode": {
+            "spearman_pooled": 0.48481363631406155,
+            "spearman_par_fenetre": 0.6587444196428572,
+            "monotonicite": 0.7781770833333335,
+            "fenetres_parfaitement_monotones": 0.2790625
+          },
+          "predit": {
+            "spearman_pooled": 0.4575575337298929,
+            "spearman_par_fenetre": 0.6422712053571429,
+            "monotonicite": 0.7687760416666666,
+            "fenetres_parfaitement_monotones": 0.25953125
+          }
+        },
+        "qrl": {
+          "encode": {
+            "spearman_pooled": 0.6292590828614595,
+            "spearman_par_fenetre": 0.7433872767857145,
+            "monotonicite": 0.8526302083333335,
+            "fenetres_parfaitement_monotones": 0.51109375
+          },
+          "predit": {
+            "spearman_pooled": 0.5687771120388206,
+            "spearman_par_fenetre": 0.7078348214285716,
+            "monotonicite": 0.8304427083333334,
+            "fenetres_parfaitement_monotones": 0.4571875
+          }
+        },
+        "corde_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.6242078860475108,
+            "spearman_par_fenetre": 0.7593973214285714,
+            "monotonicite": 0.8558333333333333,
+            "fenetres_parfaitement_monotones": 0.51609375
+          },
+          "predit": {
+            "spearman_pooled": 0.6091003101100961,
+            "spearman_par_fenetre": 0.7431584821428572,
+            "monotonicite": 0.8501822916666666,
+            "fenetres_parfaitement_monotones": 0.50578125
+          }
+        },
+        "consecutif_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.6436177196806359,
+            "spearman_par_fenetre": 0.7454129464285714,
+            "monotonicite": 0.850234375,
+            "fenetres_parfaitement_monotones": 0.5178125
+          },
+          "predit": {
+            "spearman_pooled": 0.6284424225104758,
+            "spearman_par_fenetre": 0.7447154017857143,
+            "monotonicite": 0.8493489583333335,
+            "fenetres_parfaitement_monotones": 0.5159375
+          }
+        }
+      }
+    },
+    "4": {
+      "fenetres": 7200,
+      "ecart_predit_encode_relatif": 0.026654729606908338,
+      "couts": {
+        "l2": {
+          "encode": {
+            "spearman_pooled": 0.5245721312108139,
+            "spearman_par_fenetre": 0.8355555555555556,
+            "monotonicite": 0.9016666666666666,
+            "fenetres_parfaitement_monotones": 0.8175
+          },
+          "predit": {
+            "spearman_pooled": 0.49875433586697343,
+            "spearman_par_fenetre": 0.8305555555555556,
+            "monotonicite": 0.89875,
+            "fenetres_parfaitement_monotones": 0.8138888888888889
+          }
+        },
+        "qrl": {
+          "encode": {
+            "spearman_pooled": 0.6680974349074408,
+            "spearman_par_fenetre": 0.8652083333333334,
+            "monotonicite": 0.9232638888888889,
+            "fenetres_parfaitement_monotones": 0.8581944444444445
+          },
+          "predit": {
+            "spearman_pooled": 0.5923672761080846,
+            "spearman_par_fenetre": 0.8297222222222222,
+            "monotonicite": 0.9051388888888889,
+            "fenetres_parfaitement_monotones": 0.8302777777777778
+          }
+        },
+        "corde_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.6147312467480273,
+            "spearman_par_fenetre": 0.866875,
+            "monotonicite": 0.9224305555555555,
+            "fenetres_parfaitement_monotones": 0.8544444444444445
+          },
+          "predit": {
+            "spearman_pooled": 0.5976577188304344,
+            "spearman_par_fenetre": 0.8578472222222222,
+            "monotonicite": 0.9188194444444444,
+            "fenetres_parfaitement_monotones": 0.85
+          }
+        },
+        "consecutif_sig0.01": {
+          "encode": {
+            "spearman_pooled": 0.6482141896380987,
+            "spearman_par_fenetre": 0.8731944444444445,
+            "monotonicite": 0.9269444444444445,
+            "fenetres_parfaitement_monotones": 0.8618055555555556
+          },
+          "predit": {
+            "spearman_pooled": 0.6280655883644041,
+            "spearman_par_fenetre": 0.87375,
+            "monotonicite": 0.9251388888888888,
+            "fenetres_parfaitement_monotones": 0.8590277777777777
+          }
+        }
+      }
+    }
+  }
+}
