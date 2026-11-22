@@ -81,16 +81,19 @@ Push-T, 3 seeds de modèle, 939 segments de 15 pas (but à 75 pas d'env).
 | coût | Spearman (encodé) | Spearman (prédit) | monotonicité (encodé / prédit) | effective rank | success rate CEM-300 | success rate iCEM-3000 | success rate GD |
 |---|---|---|---|---|---|---|---|
 | L2 (latent niveau 1) | 0.64 ± 0.01 | 0.45 ± 0.02 | 0.67 ± 0.00 / 0.62 ± 0.01 | 103.4 ± 0.9 (/192) | 10.0 ± 1.2 | 16.7 ± 1.3 | 40.7 ± 1.8 |
-| latent niveau 2 H-JEPA (d) | 0.69 ± 0.01 | 0.55 ± 0.01 | 0.70 ± 0.00 / 0.65 ± 0.00 | 86.4 ± 0.3 (/192) | 12.7 ± 3.5 | 23.3 ± 4.1 | 43.3 ± 2.7 |
+| latent niveau 2 H-JEPA (d) | 0.69 ± 0.01 | 0.55 ± 0.01 | 0.70 ± 0.00 / 0.65 ± 0.00 | 86.4 ± 0.3 (/192) | **12.7 ± 3.5** | **23.3 ± 4.1** | **43.3 ± 2.7** |
 | straight_c1_s0 | 0.67 ± 0.06 | 0.57 ± 0.03 | 0.71 ± 0.03 / 0.68 ± 0.01 | 2.0 ± 0.0 (/128) | – | – | 0.7 ± 0.7 |
-| straight_c1_s0.001 | 0.74 ± 0.01 | 0.64 ± 0.02 | 0.75 ± 0.01 / 0.70 ± 0.01 | 16.6 ± 0.3 (/128) | 12.0 ± 2.3 | 16.0 ± 2.3 | 22.7 ± 2.4 |
+| straight_c1_s0.001 | 0.74 ± 0.01 | **0.64 ± 0.02** | 0.75 ± 0.01 / **0.70 ± 0.01** | 16.6 ± 0.3 (/128) | 12.0 ± 2.3 | 16.0 ± 2.3 | 22.7 ± 2.4 |
 | straight_c1_s0.01 | 0.67 ± 0.00 | 0.46 ± 0.01 | 0.67 ± 0.01 / 0.61 ± 0.01 | 66.9 ± 0.5 (/128) | – | – | 28.7 ± 2.7 |
 | straight_c1_s0.1 | 0.56 ± 0.02 | 0.29 ± 0.01 | 0.66 ± 0.00 / 0.58 ± 0.00 | 125.9 ± 0.1 (/128) | – | – | 21.3 ± 1.8 |
 | straight_c1_s1 | 0.44 ± 0.02 | 0.22 ± 0.02 | 0.61 ± 0.01 / 0.55 ± 0.00 | 127.2 ± 0.0 (/128) | – | – | – |
 | SIGReg seul (contrôle) | 0.36 ± 0.01 | 0.20 ± 0.02 | 0.59 ± 0.00 / 0.55 ± 0.00 | 127.3 ± 0.0 (/128) | – | – | – |
 | QRL (b) | 0.83 ± 0.00 | 0.46 ± 0.02 | 0.76 ± 0.00 / 0.63 ± 0.01 | 9.0 ± 0.5 (/512) | – | – | – |
-| GCIVL (c) | 0.88 ± 0.00 | 0.33 ± 0.03 | 0.79 ± 0.00 / 0.62 ± 0.01 | – | – | – | – |
+| GCIVL (c) | **0.88 ± 0.00** | 0.33 ± 0.03 | **0.79 ± 0.00** / 0.62 ± 0.01 | – | – | – | – |
 
+En gras : meilleur résultat de chaque colonne. En CEM-300, l'écart avec straight_c1_s0.001
+(12,0) est dans le bruit. Pas de gras pour l'effective rank : ce n'est pas un score à maximiser,
+seulement un indicateur de collapse (un rang très bas signale un collapse).
 Lignes `straight_c1_s{λ}` : straightening (poids 1) + SIGReg de poids λ. « – » = non évalué :
 seules les 2 meilleures têtes au diagnostic non effondrées (straight_c1_s0.001, level2) passent en
 CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajoutés.
