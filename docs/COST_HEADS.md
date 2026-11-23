@@ -83,18 +83,27 @@ Push-T, 3 seeds de modèle, 939 segments de 15 pas (but à 75 pas d'env).
 | L2 (latent niveau 1) | 0.64 ± 0.01 | 0.45 ± 0.02 | 0.67 ± 0.00 / 0.62 ± 0.01 | 103.4 ± 0.9 (/192) | 10.0 ± 1.2 | 16.7 ± 1.3 | 40.7 ± 1.8 |
 | latent niveau 2 H-JEPA (d) | 0.69 ± 0.01 | 0.55 ± 0.01 | 0.70 ± 0.00 / 0.65 ± 0.00 | 86.4 ± 0.3 (/192) | **12.7 ± 3.5** | **23.3 ± 4.1** | **43.3 ± 2.7** |
 | straight_c1_s0 | 0.67 ± 0.06 | 0.57 ± 0.03 | 0.71 ± 0.03 / 0.68 ± 0.01 | 2.0 ± 0.0 (/128) | – | – | 0.7 ± 0.7 |
-| straight_c1_s0.001 | 0.74 ± 0.01 | **0.64 ± 0.02** | 0.75 ± 0.01 / **0.70 ± 0.01** | 16.6 ± 0.3 (/128) | 12.0 ± 2.3 | 16.0 ± 2.3 | 22.7 ± 2.4 |
+| straight_c1_s0.001 | 0.74 ± 0.01 | 0.64 ± 0.02 | 0.75 ± 0.01 / **0.70 ± 0.01** | 16.6 ± 0.3 (/128) | 12.0 ± 2.3 | 16.0 ± 2.3 | 22.7 ± 2.4 |
 | straight_c1_s0.01 | 0.67 ± 0.00 | 0.46 ± 0.01 | 0.67 ± 0.01 / 0.61 ± 0.01 | 66.9 ± 0.5 (/128) | – | – | 28.7 ± 2.7 |
 | straight_c1_s0.1 | 0.56 ± 0.02 | 0.29 ± 0.01 | 0.66 ± 0.00 / 0.58 ± 0.00 | 125.9 ± 0.1 (/128) | – | – | 21.3 ± 1.8 |
 | straight_c1_s1 | 0.44 ± 0.02 | 0.22 ± 0.02 | 0.61 ± 0.01 / 0.55 ± 0.00 | 127.2 ± 0.0 (/128) | – | – | – |
 | SIGReg seul (contrôle) | 0.36 ± 0.01 | 0.20 ± 0.02 | 0.59 ± 0.00 / 0.55 ± 0.00 | 127.3 ± 0.0 (/128) | – | – | – |
-| QRL (b) | 0.83 ± 0.00 | 0.46 ± 0.02 | 0.76 ± 0.00 / 0.63 ± 0.01 | 9.0 ± 0.5 (/512) | – | – | – |
-| GCIVL (c) | **0.88 ± 0.00** | 0.33 ± 0.03 | **0.79 ± 0.00** / 0.62 ± 0.01 | – | – | – | – |
+| QRL (b) | 0.83 ± 0.00 | 0.46 ± 0.02 | 0.76 ± 0.00 / 0.63 ± 0.01 | 9.0 ± 0.5 (/512) | – | – | 6.7 ± 0.7 |
+| GCIVL (c) | 0.88 ± 0.00 | 0.33 ± 0.03 | **0.79 ± 0.00** / 0.62 ± 0.01 | – | – | – | 33.3 ± 2.7 |
+| niveau 2 + straight_c1_s0.001 (2 seeds) | 0.76 ± 0.00 | **0.66 ± 0.01** | 0.77 ± 0.00 / 0.69 ± 0.00 | 16.4 ± 0.3 (/128) | – | – | 29.0 ± 3.0 |
+| niveau 2 + straight_c1_s0.01 | 0.66 ± 0.01 | 0.46 ± 0.02 | 0.67 ± 0.00 / 0.60 ± 0.01 | 66.0 ± 0.6 (/128) | – | – | 26.7 ± 2.4 |
+| niveau 2 + straight_c1_s0.1 | 0.57 ± 0.01 | 0.29 ± 0.00 | 0.65 ± 0.00 / 0.58 ± 0.00 | 125.2 ± 0.1 (/128) | – | – | 23.3 ± 1.3 |
+| niveau 2 + SIGReg seul (contrôle) | 0.39 ± 0.00 | 0.20 ± 0.01 | 0.60 ± 0.00 / 0.55 ± 0.00 | 127.2 ± 0.0 (/128) | – | – | 18.7 ± 2.4 |
+| niveau 2 + QRL (b) | 0.83 ± 0.01 | 0.50 ± 0.03 | 0.76 ± 0.00 / 0.64 ± 0.01 | 8.5 ± 0.2 (/512) | – | – | 10.0 ± 1.2 |
+| niveau 2 + GCIVL (c) | **0.89 ± 0.00** | 0.33 ± 0.02 | **0.79 ± 0.00** / 0.61 ± 0.00 | – | – | – | 28.7 ± 2.9 |
 
 En gras : meilleur résultat de chaque colonne. En CEM-300, l'écart avec straight_c1_s0.001
 (12,0) est dans le bruit. Pas de gras pour l'effective rank : ce n'est pas un score à maximiser,
 seulement un indicateur de collapse (un rang très bas signale un collapse).
-Lignes `straight_c1_s{λ}` : straightening (poids 1) + SIGReg de poids λ. « – » = non évalué :
+Lignes `straight_c1_s{λ}` : straightening (poids 1) + SIGReg de poids λ.
+Lignes « niveau 2 + … » : même tête, entraînée sur les latents de niveau 2 E₂(z) au lieu de z
+(coût ‖h(E₂(ẑ)) − h(E₂(g))‖²). « niveau 2 + straight_c1_s0.001 » : 2 seeds (42, 43), le job de la
+seed 44 est mort pendant l'entraînement (machine injoignable). « – » = non évalué :
 seules les 2 meilleures têtes au diagnostic non effondrées (straight_c1_s0.001, level2) passent en
 CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajoutés.
 
@@ -112,7 +121,14 @@ CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajou
   (43,3 % en GD, 23,3 % en iCEM), et 2ᵉ au diagnostic sur latents prédits parmi les têtes non
   effondrées (0,55).
 - **QRL / GCIVL** : excellents sur latents encodés (0,83 / 0,88), beaucoup moins sur latents
-  prédits (0,46 / 0,33) : ils ne se transfèrent pas aux états issus du prédicteur.
+  prédits (0,46 / 0,33). En GD pourtant, GCIVL (33,3 %) planifie mieux que toutes les têtes
+  straightening, alors que QRL s'effondre (6,7 %) avec un Spearman prédit équivalent à celui de L2 :
+  le diagnostic ne prédit pas le classement en planification.
+- **Têtes sur le niveau 2.** Entraîner les têtes sur E₂(z) plutôt que z ne change presque rien au
+  diagnostic (straightening λ 0,001 : 0,66 contre 0,64 sur latents prédits). En GD, cela aide un peu
+  le straightening (29,0 % contre 22,7 %) et QRL (10,0 % contre 6,7 %), dégrade un peu GCIVL (28,7 %
+  contre 33,3 %). Aucune tête ne bat le latent de niveau 2 seul (43,3 %) ni même L2 (40,7 %) : la
+  distance brute dans l'espace du world model reste le meilleur coût.
 - **CEM.** Sur ce problème (horizon 15 × 10 dimensions d'action), le CEM optimise bien moins que
   le GD : coût prédit médian atteint sur 16 segments val 380 (CEM-300) et 274 (iCEM-3000), contre
   47 (GD) et 258 (actions expertes) (`debug_solvers.py`). iCEM et GD classent les trois coûts
