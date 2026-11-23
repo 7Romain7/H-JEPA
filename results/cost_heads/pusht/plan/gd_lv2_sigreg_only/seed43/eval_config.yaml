@@ -1,0 +1,58 @@
+cache_dir: /users/eleves-a/2025/joachim.bertrand/psc/hjepa_home
+world:
+  env_name: swm/PushT-v1
+  num_envs: 50
+  max_episode_steps: ???
+  history_size: 1
+  frame_skip: 1
+dataset:
+  stats: pusht_expert_train
+  keys_to_cache:
+  - action
+  - proprio
+  - state
+  level1:
+    frameskip: 1
+    num_steps: 1
+seed: 43
+policy: /users/eleves-a/2025/joachim.bertrand/psc/hjepa_home/ckpts/pusht/pusht_hjepa_l2/seed43/pusht_hjepa_l2_object.ckpt
+dump_eval_trajs_path: null
+load_eval_trajs_path: assets/eval_trajs/pusht/goal_offset_75_val.pt
+solver:
+  _target_: stable_worldmodel.solver.GradientSolver
+  model: ???
+  n_steps: 90
+  batch_size: 1
+  var_scale: 1.0
+  num_samples: 800
+  action_noise: 0
+  device: cuda
+  seed: 43
+  optimizer_cls:
+    _target_: hydra.utils.get_class
+    path: torch.optim.AdamW
+  optimizer_kwargs:
+    lr: 0.05
+plan_config:
+  horizon: 15
+  receding_horizon: 2
+  action_block: 5
+  cost_last_n: 2
+eval:
+  num_eval: 50
+  goal_offset_steps: 75
+  eval_budget: 90
+  img_size: 224
+  dataset_name: pusht_expert_train
+  callables:
+  - method: _set_state
+    args:
+      state:
+        value: state
+  - method: _set_goal_state
+    args:
+      goal_state:
+        value: goal_state
+output:
+  dir: /users/eleves-a/2025/joachim.bertrand/psc/hjepa_home/results/plan/gd_lv2_sigreg_only/seed43
+cost_head: /users/eleves-a/2025/joachim.bertrand/psc/hjepa_home/heads/lv2_sigreg_only/seed43/head.pt
