@@ -150,6 +150,26 @@ def hjepa_forward(self, batch, stage, cfg, *, normalize_batch):
             output[f"{component}_loss{level_suffix}"] = component_loss
             level_loss = component_loss if level_loss is None else level_loss + component_loss
 
+        # Temporal straightening (L_curv = 1 - cos(v_t, v_{t+1}), v_t = e_{t+1} - e_t) on the
+        # encoded frames, trained jointly with the world model. head: on a projection h(z)
+        # (jepa.curv_head, gradient flows into the encoder, plus SIGReg on h); else on z itself.
+        curv_cfg = level_cfg.get("curv", None)
+        if curv_cfg is not None and float(curv_cfg.get("weight", 0.0)) > 0:
+            e = emb.flatten(2)  # (B, T, D)
+            use_head = bool(curv_cfg.get("head", False))
+            if use_head:
+                e = jepa.curv_head.net(e)
+            v = e[:, 1:] - e[:, :-1]
+            cos = F.cosine_similarity(v[:, :-1], v[:, 1:], dim=-1, eps=1e-8)
+            curv_loss = (1 - cos).mean()
+            output[f"curv_loss{level_suffix}"] = curv_loss
+            level_loss = level_loss + float(curv_cfg.weight) * curv_loss
+            head_sigreg_weight = float(curv_cfg.get("head_sigreg_weight", 0.0))
+            if use_head and head_sigreg_weight > 0:
+                head_sigreg = getattr(self, _sigreg_module_name("curv", level))(e.transpose(0, 1))
+                output[f"sigreg_curv_loss{level_suffix}"] = head_sigreg
+                level_loss = level_loss + head_sigreg_weight * head_sigreg
+
         action_sigreg_coeff = float(level_cfg.get("action_sigreg_coeff", 0.0))
         if action_sigreg_coeff > 0:
             action_sigreg_loss = getattr(self, _sigreg_module_name("action", level))(
@@ -332,6 +352,13 @@ def create_world_model(cfg):
                 )
             )
 
+        curv_cfg = level_cfg.get("curv", None)
+        if curv_cfg is not None and float(curv_cfg.get("weight", 0.0)) > 0 and curv_cfg.get("head", False):
+            from cost_heads import ProjHead
+
+            # saved with the model; planning uses ||h(z) - h(g)||^2 (cost_head: curv_head)
+            jepa.curv_head = ProjHead(embed_dim, 512, int(curv_cfg.get("head_out_dim", 128)))
+
         jepas.append(jepa)
 
     world_model = HJEPA(jepas=jepas)
@@ -352,5 +379,9 @@ def create_world_model(cfg):
             losses[_sigreg_module_name(component, level)] = SIGReg(**sigreg_kwargs)
         if float(level_cfg.get("action_sigreg_coeff", 0.0)) > 0:
             losses[_sigreg_module_name("action", level)] = SIGReg()
+        curv_cfg = level_cfg.get("curv", None)
+        if (curv_cfg is not None and float(curv_cfg.get("weight", 0.0)) > 0
+                and curv_cfg.get("head", False) and float(curv_cfg.get("head_sigreg_weight", 0.0)) > 0):
+            losses[_sigreg_module_name("curv", level)] = SIGReg()
 
     return world_model, losses

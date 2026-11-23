@@ -195,6 +195,8 @@ def build_head(spec: str, hjepa=None, device='cpu'):
         return L2Head()
     if spec == 'level2':
         return Level2Head(hjepa.jepas[1])
+    if spec == 'curv_head':  # projection trained jointly with the world model (level1.curv.head)
+        return hjepa.jepas[0].curv_head
     head = torch.load(spec, map_location=device, weights_only=False)
     if getattr(head, 'on_level2', False):
         assert hjepa is not None, 'a level-2 head needs the full HJEPA'

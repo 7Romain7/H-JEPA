@@ -98,6 +98,9 @@ def main():
         zt = np.load(Path(a.rank_latents) / f'latents_seed{a.seed}.npy', mmap_mode='r')
         idx = np.sort(np.random.default_rng(0).choice(len(zt), min(10000, len(zt)), replace=False))
         rank_z = torch.as_tensor(np.asarray(zt[idx], dtype=np.float32), device=dev)
+    else:  # no encoded train set (e.g. a freshly trained world model): val frames
+        idx = np.sort(np.random.default_rng(0).choice(len(z_all), min(10000, len(z_all)), replace=False))
+        rank_z = z_all[torch.as_tensor(idx, device=dev)]
 
     results = {'seed': a.seed, 'goal_steps': T, 'n_segments': len(starts),
                'rollout_sq_error_by_step': pred_err, 'heads': {}}

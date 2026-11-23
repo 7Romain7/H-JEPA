@@ -95,6 +95,11 @@ final_probing_decoding_eval:
         enabled: true
 level1:
   lr: 5.0e-05
+  curv:  # temporal straightening on the level-1 latent (hjepa_utils.hjepa_forward); 0 = off
+    weight: 0.0
+    head: false            # true: on a projection h(z) trained jointly (planning cost_head=curv_head)
+    head_out_dim: 128
+    head_sigreg_weight: 0.09
   wm:
     history_size: 3
     rollout_n: 1

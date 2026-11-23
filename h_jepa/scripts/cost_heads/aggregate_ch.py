@@ -15,11 +15,17 @@ import yaml
 
 BASE = ['straight_c1_s0', 'straight_c1_s0.001', 'straight_c1_s0.01', 'straight_c1_s0.1',
         'straight_c1_s1', 'sigreg_only', 'qrl', 'gcivl']
-ORDER = ['L2', 'level2'] + BASE + [f'lv2_{n}' for n in BASE]
+WM = ['wm_base', 'wm_h_c0.1_h', 'wm_h_c1_h', 'wm_z_c0.1', 'wm_z_c1', 'wm_h_c0.1', 'wm_h_c1']
+ORDER = ['L2', 'level2'] + BASE + [f'lv2_{n}' for n in BASE] + WM
 LABEL = {'L2': 'L2 (latent niveau 1)', 'level2': 'latent niveau 2 H-JEPA (d)',
          'sigreg_only': 'SIGReg seul (contrôle)', 'qrl': 'QRL (b)', 'gcivl': 'GCIVL (c)'}
 LABEL.update({f'lv2_{n}': f'niveau 2 + {LABEL.get(n, n)}' for n in BASE})
+LABEL.update({'wm_base': 'WM réentraîné, L2 (λ_curv 0)',
+              'wm_z_c0.1': 'WM + L_curv 0,1 sur z, L2', 'wm_z_c1': 'WM + L_curv 1 sur z, L2',
+              'wm_h_c0.1': 'WM + L_curv 0,1 sur h, L2 dans z', 'wm_h_c1': 'WM + L_curv 1 sur h, L2 dans z',
+              'wm_h_c0.1_h': 'WM + L_curv 0,1 sur h, coût dans h', 'wm_h_c1_h': 'WM + L_curv 1 sur h, coût dans h'})
 PLAN_NAME = {'L2': 'l2', 'level2': 'level2'}
+PLAN_NAME.update({'wm_h_c0.1_h': 'wm_h_c0.1', 'wm_h_c1_h': 'wm_h_c1', 'wm_h_c0.1': None, 'wm_h_c1': None})
 
 
 def fmt(xs, pct=False, nd=2):
@@ -60,7 +66,8 @@ def main(root):
         sr = {}
         for solver in ('cem', 'icem', 'gd'):
             vals = []
-            for p in sorted((root / 'plan' / f'{solver}_{PLAN_NAME.get(n, n)}').glob('seed*/metrics.yaml')):
+            pn = PLAN_NAME.get(n, n)
+            for p in ([] if pn is None else sorted((root / 'plan' / f'{solver}_{pn}').glob('seed*/metrics.yaml'))):
                 vals.append(yaml.safe_load(p.read_text())['success_rate'])
             sr[solver] = fmt(vals, pct=True) + (f' ({len(vals)} seeds)' if vals and len(vals) < 3 else '')
         print(f'| {LABEL.get(n, n)} | {sp_e} | {sp_p} | {mo} | {er_s} | {sr["cem"]} | {sr["icem"]} | {sr["gd"]} |')

@@ -6,6 +6,8 @@
   D : planification CEM (+ GD) des tetes retenues : python make_jobs_ch.py D --heads straight_c1_s0.01 level2
   E : tetes entrainees sur le latent de niveau 2 (lv2_*) : entrainement + diagnostic + GD en un job,
       et GD des tetes QRL / GCIVL de niveau 1
+  F : world models reentraines avec straightening (WM non gele) : entrainement + diagnostic + GD
+  S : test rapide de F (200 batches, 1 seed, variante tete)
 
 Ecrit jobs_ch_<phase>.txt. Lancement :
   $env:PSC_REMOTE_CODE="~/psc/hjepa"; $env:PSC_REMOTE_VENV="~/psc/hjepa_env"
@@ -27,6 +29,13 @@ HEADS = {  # nom -> arguments de train_cost_head.py
     'qrl': '--head qrl --steps 100000',
     'gcivl': '--head gcivl --steps 100000',
 }
+WM_RUNS = {  # nom -> (cout de planification, overrides Hydra de main_hjepa.py)
+    'wm_base': ('l2', ''),
+    'wm_z_c0.1': ('l2', 'level1.curv.weight=0.1'),
+    'wm_z_c1': ('l2', 'level1.curv.weight=1'),
+    'wm_h_c0.1': ('curv_head', 'level1.curv.weight=0.1 level1.curv.head=true'),
+    'wm_h_c1': ('curv_head', 'level1.curv.weight=1 level1.curv.head=true'),
+}
 LV2_HEADS = {  # tetes sur E2(z), E2 encodeur de niveau 2 gele
     f'lv2_{n}': HEADS[n] + ' --level2'
     for n in ['straight_c1_s0.001', 'straight_c1_s0.01', 'straight_c1_s0.1', 'sigreg_only', 'qrl', 'gcivl']
@@ -35,7 +44,7 @@ LV2_HEADS = {  # tetes sur E2(z), E2 encodeur de niveau 2 gele
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('phase', choices=list('ABCDE'))
+    p.add_argument('phase', choices=list('ABCDEFS'))
     p.add_argument('--heads', nargs='*', default=[])
     p.add_argument('--gd', action='store_true', help='phase D : aussi le planificateur GD (AdamW)')
     a = p.parse_args()
@@ -54,6 +63,14 @@ def main():
             f'{n}=$HJEPA_HOME/heads/{n}/seed{{s}}/head.pt' for n in HEADS]
         for s in SEEDS:
             lines.append(f'ch_diag_s{s} | {J} diag {s} ' + ' '.join(x.format(s=s) for x in specs))
+    elif a.phase == 'F':
+        for name, (head, ov) in WM_RUNS.items():
+            for s in SEEDS:
+                lines.append(f'ch_{name}_s{s} | {J} wm {s} {name} {head} {ov}'.rstrip())
+    elif a.phase == 'S':
+        lines.append(f'ch_wm_smoke | {J} wm 42 wm_smoke curv_head level1.curv.weight=1 '
+                     'level1.curv.head=true trainer.max_epochs=1 trainer.limit_train_batches=200 '
+                     'trainer.limit_val_batches=20')
     elif a.phase == 'E':
         for name, args in LV2_HEADS.items():
             for s in SEEDS:

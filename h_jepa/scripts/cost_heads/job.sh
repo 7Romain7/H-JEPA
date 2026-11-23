@@ -55,5 +55,33 @@ case $kind in
     bash "$SELF" diag "$seed" "tag=$name" "$name=$H/heads/$name/seed$seed/head.pt"
     bash "$SELF" plan pusht_flat "$seed" "$name" "gd_$name"
     ;;
+  wm)
+    # wm <seed> <name> <cost_head l2|curv_head> <hydra overrides...>: train an H-JEPA (pusht_hjepa_l2)
+    # on the machine-local disk, then diagnose it and plan with GD; only results go to $H.
+    seed=$1; name=$2; head=$3; shift 3
+    T=/tmp/$USER/hjepa_wm; mkdir -p "$T"
+    if [ ! -s "$T/pusht_expert_train.h5" ]; then
+      curl -sfL -o "$T/train.h5.zst" \
+        https://huggingface.co/datasets/quentinll/lewm-pusht/resolve/main/pusht_expert_train.h5.zst
+      unzstd -q -f --rm "$T/train.h5.zst" -o "$T/pusht_expert_train.h5"
+    fi
+    [ -s "$T/pusht_expert_val.h5" ] || cp "$H/pusht_expert_val.h5" "$T/"
+    HJEPA_HOME=$T python main_hjepa.py --config-name pusht_hjepa_l2 seed="$seed" \
+      output_model_name="$name" planning_eval.enabled=false final_probing_decoding_eval.enabled=false \
+      num_workers="${NUM_WORKERS:-8}" "$@"
+    D=$T/ckpts/pusht/$name; CK=$D/seed$seed/${name}_object.ckpt
+    ls -la "$CK"
+    specs=("$name=l2")
+    [ "$head" = curv_head ] && specs+=("${name}_h=curv_head")
+    args=(); for spec in "${specs[@]}"; do args+=(--head "$spec"); done
+    python cost_diagnostic.py --ckpt-dir "$D" --seed "$seed" --val-h5 "$T/pusht_expert_val.h5" \
+      --out "$H/results/diag/seed${seed}_$name.json" "${args[@]}"
+    python eval.py --config-name pusht_flat seed="$seed" policy="$CK" \
+      ++cost_head="$head" output.dir="$H/results/plan/gd_$name/seed$seed"
+    # small artifacts home: training logs of the run (not the 93 MB checkpoints)
+    mkdir -p "$H/wm_runs/$name/seed$seed"
+    find "$D/seed$seed" -maxdepth 2 \( -name "*.yaml" -o -name "*.csv" -o -name "*.json" -o -name "*.log" \) \
+      -size -5M -exec cp {} "$H/wm_runs/$name/seed$seed/" \; || true
+    ;;
   *) echo "unknown job kind $kind"; exit 2 ;;
 esac
