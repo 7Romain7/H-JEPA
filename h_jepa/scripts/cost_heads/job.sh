@@ -66,6 +66,7 @@ case $kind in
       unzstd -q -f --rm "$T/train.h5.zst" -o "$T/pusht_expert_train.h5"
     fi
     [ -s "$T/pusht_expert_val.h5" ] || cp "$H/pusht_expert_val.h5" "$T/"
+    python ../scripts/data/add_pusht_block_ori.py "$T/pusht_expert_train.h5"  # README step (idempotent)
     HJEPA_HOME=$T python main_hjepa.py --config-name pusht_hjepa_l2 seed="$seed" \
       output_model_name="$name" planning_eval.enabled=false final_probing_decoding_eval.enabled=false \
       num_workers="${NUM_WORKERS:-8}" "$@"

@@ -68,9 +68,9 @@ def main():
             for s in SEEDS:
                 lines.append(f'ch_{name}_s{s} | {J} wm {s} {name} {head} {ov}'.rstrip())
     elif a.phase == 'S':
-        lines.append(f'ch_wm_smoke | {J} wm 42 wm_smoke curv_head level1.curv.weight=1 '
-                     'level1.curv.head=true trainer.max_epochs=1 trainer.limit_train_batches=200 '
-                     'trainer.limit_val_batches=20')
+        lines.append(f'ch_wm_smoke2 | {J} wm 42 wm_smoke curv_head level1.curv.weight=1 '
+                     'level1.curv.head=true trainer.max_epochs=1 ++trainer.limit_train_batches=200 '
+                     '++trainer.limit_val_batches=20')
     elif a.phase == 'E':
         for name, args in LV2_HEADS.items():
             for s in SEEDS:
