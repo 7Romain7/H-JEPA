@@ -29,6 +29,7 @@ HEADS = {  # nom -> arguments de train_cost_head.py
     'qrl': '--head qrl --steps 100000',
     'gcivl': '--head gcivl --steps 100000',
 }
+WM_COMMON = 'loader.batch_size=64 trainer.max_epochs=3'  # batch 128 sature 24 Go ; 9 epoques > 1 nuit
 WM_RUNS = {  # nom -> (cout de planification, overrides Hydra de main_hjepa.py)
     'wm_base': ('l2', ''),
     'wm_z_c0.1': ('l2', 'level1.curv.weight=0.1'),
@@ -66,9 +67,9 @@ def main():
     elif a.phase == 'F':
         for name, (head, ov) in WM_RUNS.items():
             for s in SEEDS:
-                lines.append(f'ch_{name}_s{s} | {J} wm {s} {name} {head} {ov}'.rstrip())
+                lines.append(f'ch_{name}_s{s} | {J} wm {s} {name} {head} {WM_COMMON} {ov}'.rstrip())
     elif a.phase == 'S':
-        lines.append(f'ch_wm_smoke2 | {J} wm 42 wm_smoke curv_head level1.curv.weight=1 '
+        lines.append(f'ch_wm_smoke3 | {J} wm 42 wm_smoke curv_head level1.curv.weight=1 '
                      'level1.curv.head=true trainer.max_epochs=1 ++trainer.limit_train_batches=200 '
                      '++trainer.limit_val_batches=20')
     elif a.phase == 'E':
