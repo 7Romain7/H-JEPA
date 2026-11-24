@@ -53,6 +53,20 @@ class _MemLog(pl.pytorch.callbacks.Callback):
             _t.cuda.reset_peak_memory_stats()
 
 
+class _GcCollect(pl.pytorch.callbacks.Callback):
+    """gc.collect() every N train steps. Each step's outputs sit in a reference cycle that only
+    Python's cyclic GC frees, and it runs too rarely for GPU memory: allocated memory grew by
+    ~23 MB/step at batch 32 (OOM on 24 GB cards after a few hundred to a few thousand steps)."""
+
+    def __init__(self, every=50):
+        self.every = every
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        if batch_idx % self.every == 0:
+            import gc
+            gc.collect()
+
+
 class GradClipModule(spt.Module):
     def clip_gradients(self, optimizer, gradient_clip_val=None, gradient_clip_algorithm=None):
         if not self._train_cfg.get("grad_clip_per_level", False):
@@ -331,6 +345,7 @@ def run(cfg):
         planning_eval_callback,
         final_probing_decoding_eval_callback,
         lr_callback,
+        _GcCollect(int(cfg.get("gc_every_n_steps", 50))),
         *([_MemLog(int(os.environ["HJEPA_MEMLOG"]))] if os.environ.get("HJEPA_MEMLOG") else []),
         ],
         logger=logger,
