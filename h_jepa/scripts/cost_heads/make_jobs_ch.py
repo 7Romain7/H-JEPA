@@ -29,7 +29,7 @@ HEADS = {  # nom -> arguments de train_cost_head.py
     'qrl': '--head qrl --steps 100000',
     'gcivl': '--head gcivl --steps 100000',
 }
-WM_COMMON = 'loader.batch_size=64 trainer.max_epochs=3'  # batch 128 sature 24 Go ; 9 epoques > 1 nuit
+WM_COMMON = ('loader.batch_size=32 ++trainer.accumulate_grad_batches=2 trainer.max_epochs=3')  # batch 64/128 saturent 24 Go ; 9 epoques > 1 nuit
 WM_RUNS = {  # nom -> (cout de planification, overrides Hydra de main_hjepa.py)
     'wm_base': ('l2', ''),
     'wm_z_c0.1': ('l2', 'level1.curv.weight=0.1'),
