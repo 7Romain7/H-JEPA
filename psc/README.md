@@ -62,5 +62,6 @@ Les tableaux sont dans le document de comparaison.
 Un seul réglage par tête, sans recherche d'hyperparamètres. QRL et la tête 3e
 sont réécrits d'après le mail du tuteur, sans partir des codes d'origine. Les
 têtes entraînées ne sont pas versionnées. Le coût d'une tête est remis à
-l'échelle du L2 par égalité des médianes sur le premier lot de candidats, choix
-dont l'effet n'a pas été mesuré.
+l'échelle du L2 par égalité des médianes sur le premier lot de candidats. Cette
+étape est inutile, le planner AdamW étant insensible à une constante positive
+devant le coût.

@@ -156,8 +156,8 @@ Push-T dans les deux implémentations. Sur Cube il fait nettement moins bien.
    `pair_cost` commune et une intégration dans `planning_eval.py`. Le dossier
    `psc/` contient ce qui lui manque, à savoir le support de Cube, la tête 3e, le
    probe et la comparaison tâche par tâche.
-3. Décider si le coût d'une tête doit être remis à l'échelle avant le planning.
-   B le fait et A ne le fait pas, sans qu'aucun des deux ait mesuré l'effet de ce
-   choix.
+3. La remise à l'échelle du coût faite par B est sans effet et peut être
+   abandonnée. Le planner utilise AdamW puis garde le candidat de coût minimal,
+   si bien qu'une constante positive devant le coût ne change pas le plan.
 4. Refaire le planning de la variante « corde » et de QRL dans le montage de A
    pour savoir si les écarts viennent des têtes ou du world model.
