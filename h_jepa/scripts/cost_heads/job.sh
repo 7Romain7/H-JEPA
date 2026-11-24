@@ -60,8 +60,8 @@ case $kind in
     # on the machine-local disk, then diagnose it and plan with GD; only results go to $H.
     seed=$1; name=$2; head=$3; shift 3
     T=/tmp/$USER/hjepa_wm; mkdir -p "$T"
-    if [ ! -s "$T/pusht_expert_train.h5" ]; then
-      curl -sfL -o "$T/train.h5.zst" \
+    if [ ! -s "$T/pusht_expert_train.h5" ] || [ -s "$T/train.h5.zst" ]; then
+      curl -sfL --retry 8 --retry-all-errors --retry-delay 20 -C - -o "$T/train.h5.zst" \
         https://huggingface.co/datasets/quentinll/lewm-pusht/resolve/main/pusht_expert_train.h5.zst
       unzstd -q -f --rm "$T/train.h5.zst" -o "$T/pusht_expert_train.h5"
     fi
