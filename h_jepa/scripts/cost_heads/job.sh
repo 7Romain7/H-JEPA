@@ -67,6 +67,7 @@ case $kind in
     fi
     [ -s "$T/pusht_expert_val.h5" ] || cp "$H/pusht_expert_val.h5" "$T/"
     python ../scripts/data/add_pusht_block_ori.py "$T/pusht_expert_train.h5"  # README step (idempotent)
+    rm -rf "$T/ckpts/pusht/$name/seed$seed"   # no resume from an earlier job of the same name
     HJEPA_HOME=$T python main_hjepa.py --config-name pusht_hjepa_l2 seed="$seed" \
       output_model_name="$name" planning_eval.enabled=false final_probing_decoding_eval.enabled=false \
       num_workers="${NUM_WORKERS:-8}" "$@"
