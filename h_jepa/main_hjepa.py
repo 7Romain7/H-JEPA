@@ -39,6 +39,20 @@ IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
 
+class _MemLog(pl.pytorch.callbacks.Callback):
+    """HJEPA_MEMLOG=N: print allocated/peak GPU memory every N train steps (memory debugging)."""
+
+    def __init__(self, every):
+        self.every = every
+
+    def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        if batch_idx % self.every == 0:
+            import torch as _t
+            print(f"MEMLOG step {batch_idx} alloc {_t.cuda.memory_allocated() / 2**30:.2f} GiB "
+                  f"peak {_t.cuda.max_memory_allocated() / 2**30:.2f} GiB", flush=True)
+            _t.cuda.reset_peak_memory_stats()
+
+
 class GradClipModule(spt.Module):
     def clip_gradients(self, optimizer, gradient_clip_val=None, gradient_clip_algorithm=None):
         if not self._train_cfg.get("grad_clip_per_level", False):
@@ -317,6 +331,7 @@ def run(cfg):
         planning_eval_callback,
         final_probing_decoding_eval_callback,
         lr_callback,
+        *([_MemLog(int(os.environ["HJEPA_MEMLOG"]))] if os.environ.get("HJEPA_MEMLOG") else []),
         ],
         logger=logger,
         enable_checkpointing=False,
