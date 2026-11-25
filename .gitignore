@@ -38,3 +38,6 @@ h_jepa/unit_tests/
 
 # previous README, kept for local reference
 /README_old.md
+
+# world models trained jointly (93 MB each), kept on the PC only
+checkpoints/wm_joint/

@@ -4,6 +4,7 @@
 #   job.sh plan <config> <seed> <cost_head> <name> planning eval (50 tasks), cost_head: l2|level2|path
 #   job.sh train <seed> <name> <train_cost_head args...>
 #   job.sh diag <seed> <name=spec>...              offline diagnostic (step 2)
+#   job.sh wm / postwm ...                          joint training of a world model (see below)
 # Needs HJEPA_HOME (checkpoints, val set, eval tasks, latents, heads, results).
 set -euo pipefail
 SELF="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
@@ -57,7 +58,9 @@ case $kind in
     ;;
   wm)
     # wm <seed> <name> <cost_head l2|curv_head> <hydra overrides...>: train an H-JEPA (pusht_hjepa_l2)
-    # on the machine-local disk, then diagnose it and plan with GD; only results go to $H.
+    # on the machine-local disk, then diagnose it and plan with GD (postwm); only results go to $H.
+    # WM_RESUME=1: resume the run from its lightning_resume/last.ckpt (local, else one stashed in
+    # $H/wm_resume/<name>/seed<seed>/); otherwise start from an empty run dir.
     seed=$1; name=$2; head=$3; shift 3
     T=/tmp/$USER/hjepa_wm; mkdir -p "$T"
     if [ ! -s "$T/pusht_expert_train.h5" ] || [ -s "$T/train.h5.zst" ]; then
@@ -67,23 +70,46 @@ case $kind in
     fi
     [ -s "$T/pusht_expert_val.h5" ] || cp "$H/pusht_expert_val.h5" "$T/"
     python ../scripts/data/add_pusht_block_ori.py "$T/pusht_expert_train.h5"  # README step (idempotent)
-    rm -rf "$T/ckpts/pusht/$name/seed$seed"   # no resume from an earlier job of the same name
+    R=$T/ckpts/pusht/$name/seed$seed
+    if [ -n "${WM_RESUME:-}" ]; then
+      S=$H/wm_resume/$name/seed$seed/last.ckpt
+      if [ ! -s "$R/lightning_resume/last.ckpt" ] && [ -s "$S" ]; then
+        mkdir -p "$R/lightning_resume"; cp "$S" "$R/lightning_resume/"
+      fi
+      ls -la "$R/lightning_resume/last.ckpt"
+    else
+      rm -rf "$R"   # no resume from an earlier job of the same name
+    fi
     HJEPA_HOME=$T python main_hjepa.py --config-name pusht_hjepa_l2 seed="$seed" \
       output_model_name="$name" planning_eval.enabled=false final_probing_decoding_eval.enabled=false \
       num_workers="${NUM_WORKERS:-8}" "$@"
-    D=$T/ckpts/pusht/$name; CK=$D/seed$seed/${name}_object.ckpt
-    ls -la "$CK"
-    specs=("$name=l2")
-    [ "$head" = curv_head ] && specs+=("${name}_h=curv_head")
-    args=(); for spec in "${specs[@]}"; do args+=(--head "$spec"); done
-    python cost_diagnostic.py --ckpt-dir "$D" --seed "$seed" --val-h5 "$T/pusht_expert_val.h5" \
-      --out "$H/results/diag/seed${seed}_$name.json" "${args[@]}"
-    python eval.py --config-name pusht_flat seed="$seed" policy="$CK" \
-      ++cost_head="$head" output.dir="$H/results/plan/gd_$name/seed$seed"
     # small artifacts home: training logs of the run (not the 93 MB checkpoints)
     mkdir -p "$H/wm_runs/$name/seed$seed"
-    find "$D/seed$seed" -maxdepth 2 \( -name "*.yaml" -o -name "*.csv" -o -name "*.json" -o -name "*.log" \) \
+    find "$R" -maxdepth 3 \( -name "*.yaml" -o -name "*.csv" -o -name "*.json" -o -name "*.log" \) \
       -size -5M -exec cp {} "$H/wm_runs/$name/seed$seed/" \; || true
+    bash "$SELF" postwm "$seed" "$name" "$head"
+    ;;
+  postwm)
+    # postwm <seed> <name> <cost_head> [epoch]: offline diagnostic + GD planning of a world model
+    # trained by `wm` on this machine: its final checkpoint, or the one of epoch <epoch>
+    # (results then named <name>_e<epoch>).
+    seed=$1; name=$2; head=$3; ep=${4:-}
+    T=/tmp/$USER/hjepa_wm; R=$T/ckpts/pusht/$name/seed$seed
+    out=$name; D=$T/ckpts/pusht/$name
+    if [ -n "$ep" ]; then   # run-dir view whose <out>_object.ckpt is the epoch checkpoint
+      out=${name}_e$ep; D=$T/post/$out; mkdir -p "$D/seed$seed"
+      for f in "$R"/*; do if [ -f "$f" ]; then ln -sf "$f" "$D/seed$seed/"; fi; done
+      ln -sf "$R/${name}_epoch_${ep}_object.ckpt" "$D/seed$seed/${out}_object.ckpt"
+    fi
+    CK=$D/seed$seed/${out}_object.ckpt
+    ls -laL "$CK"
+    specs=("$out=l2")
+    [ "$head" = curv_head ] && specs+=("${out}_h=curv_head")
+    args=(); for spec in "${specs[@]}"; do args+=(--head "$spec"); done
+    python cost_diagnostic.py --ckpt-dir "$D" --seed "$seed" --val-h5 "$T/pusht_expert_val.h5" \
+      --out "$H/results/diag/seed${seed}_$out.json" "${args[@]}"
+    python eval.py --config-name pusht_flat seed="$seed" policy="$CK" \
+      ++cost_head="$head" output.dir="$H/results/plan/gd_$out/seed$seed"
     ;;
   *) echo "unknown job kind $kind"; exit 2 ;;
 esac
