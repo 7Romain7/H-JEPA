@@ -135,6 +135,59 @@ CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajou
   évalués dans le même ordre (niveau 2 > L2 ≥ straightening) ; en CEM-300 les écarts sont dans
   le bruit.
 
+## Entraînement joint
+
+Ici le world model n'est plus gelé : L_curv = 1 − cos(v_t, v_{t+1}) est ajoutée à la perte
+d'entraînement de H-JEPA (`level1.curv.weight` = λ_curv), soit directement sur z (`wm_z_*`, coût
+de planification L2 dans z), soit sur une tête h entraînée conjointement avec SIGReg
+(`level1.curv.head=true`, `wm_h_*`, coût de planification ‖h(ẑ) − h(g)‖², `cost_head=curv_head`).
+λ_curv ∈ {0 (`wm_base`), 0,1, 1}, seeds 42/43/44, config `pusht_hjepa_l2`.
+
+**Budget réduit** : batch 64 et 3 époques (79 755 pas), contre la config par défaut (batch 128, 9 époques) des
+checkpoints publiés. Le batch 128 ne tenait pas en mémoire GPU sur les machines du cluster (fuite
+par cycle de références, corrigée depuis par un `gc.collect()` périodique), et 3 époques tiennent en
+une soirée. Les entraînements ont été coupés par le nettoyage quotidien de la DSI (≈ 00h30) et
+repris le lendemain depuis `lightning_resume/last.ckpt`, parfois sur une autre machine. La
+comparaison juste est donc avec `wm_base` (même budget, λ_curv 0), pas avec le checkpoint publié.
+
+| coût | Spearman (encodé) | Spearman (prédit) | monotonicité (encodé / prédit) | effective rank | success rate GD |
+|---|---|---|---|---|---|
+| checkpoint publié, L2 (référence) | 0.64 ± 0.01 | 0.45 ± 0.02 | 0.67 ± 0.00 / 0.62 ± 0.01 | 103.4 ± 0.9 (/192) | **40.7 ± 1.8** |
+| WM réentraîné, L2 (λ_curv 0) | 0.67 ± 0.02 | 0.52 ± 0.03 | 0.67 ± 0.01 / 0.64 ± 0.01 | 59.8 ± 1.0 (/192) | **26.0 ± 5.3** |
+| WM + L_curv 0,1 sur z, L2 | 0.61 ± 0.05 | 0.49 ± 0.07 | 0.65 ± 0.03 / 0.62 ± 0.02 | 42.2 ± 2.0 (/192) | 11.3 ± 5.7 |
+| WM + L_curv 1 sur z, L2 | 0.69 ± 0.02 | -0.01 ± 0.50 | 0.46 ± 0.23 / 0.41 ± 0.20 | 10.6 ± 6.1 (/192) | 0.0 ± 0.0 (2 seeds) ¹ |
+| WM + L_curv 0,1 sur h, coût dans h | 0.72 ± 0.01 | 0.50 ± 0.01 | 0.72 ± 0.01 / 0.64 ± 0.01 | 67.5 ± 0.2 (/128) | 25.3 ± 7.7 |
+| WM + L_curv 0,1 sur h, L2 dans z | **0.76 ± 0.01** | 0.61 ± 0.02 | 0.73 ± 0.00 / 0.67 ± 0.00 | 64.8 ± 0.8 (/192) | – |
+| WM + L_curv 1 sur h, coût dans h | 0.72 ± 0.01 | **0.65 ± 0.01** | **0.74 ± 0.01** / **0.69 ± 0.00** | 24.3 ± 0.2 (/128) | 5.3 ± 2.4 |
+| WM + L_curv 1 sur h, L2 dans z | 0.69 ± 0.03 | **0.65 ± 0.01** | 0.68 ± 0.01 / 0.66 ± 0.01 | 45.0 ± 4.1 (/192) | – |
+| idem après 2 époques (seed 42), coût dans h | 0.72 | 0.61 | 0.74 / 0.68 | 24.5 (/128) | 10.0 |
+| idem après 2 époques (seed 42), L2 dans z | 0.72 | 0.58 | 0.71 / 0.63 | 49.2 (/192) | – |
+
+GD par seed (42 / 43 / 44) : `wm_base` 28 / 16 / 34 ; z λ 0,1 : 16 / 0 / 18 ; z λ 1 : – / 0 / 0 ;
+h λ 0,1 : 14 / 40 / 22 ; h λ 1 : 10 / 2 / 4.
+¹ La planification de z λ 1 seed 42 a été coupée par un redémarrage des machines (22h41) après
+40 tâches sur 50 : 1 succès sur 40 (2,5 %), non compté dans la moyenne. « – » = non évalué (les
+variantes h planifient avec le coût dans h). Les lignes « 2 époques » viennent d'un test du
+pipeline sur le checkpoint de l'époque 2 de `wm_h_c1` seed 42.
+
+### Lecture
+
+- **Budget.** À budget réduit, la baseline réentraînée planifie nettement moins bien que le
+  checkpoint publié (26,0 % contre 40,7 % en GD), alors que son diagnostic est un peu meilleur
+  (Spearman prédit 0,52 contre 0,45) : encore un cas où le diagnostic ne prédit pas la planification.
+- **L_curv sur z dégrade le world model.** λ 0,1 réduit le rang (42 contre 60) et la
+  planification (11,3 %) ; λ 1 effondre l'espace latent (rang 1,0 sur la seed 43, Spearman prédit
+  −1,0, i.e. le prédicteur a perdu l'information utile) et la planification (≈ 0 %).
+- **L_curv sur une tête h avec SIGReg protège z.** Le rang de z reste à 45–65 et le diagnostic
+  s'améliore sur toutes les colonnes (meilleur Spearman encodé et prédit de toute l'étude sur un
+  world model réentraîné). Avec λ 0,1, la planification dans h égale `wm_base` (25,3 % contre
+  26,0 %, dans le bruit) ; avec λ 1, h a un rang de 24/128 et la planification s'effondre (5,3 %),
+  comme la tête straightening gelée (λ SIGReg 0,001 : rang 17, 22,7 %).
+- **Conclusion.** L'entraînement joint ne bat pas le coût L2 du world model réentraîné au même
+  budget, et aucune variante n'approche le checkpoint publié. Un coût plus « droit » le long des
+  trajectoires expertes n'aide pas l'optimiseur GD. Non testé : la planification L2 dans z pour les
+  variantes h (le world model de `wm_h_c0.1` a le meilleur diagnostic L2 de cette section), et le
+  budget complet (batch 128, 9 époques).
 
 ## Checkpoints
 
@@ -146,6 +199,9 @@ CEM (étape 4) ; les GD des autres têtes straightening sont des contrôles ajou
   dont elle utilise les latents. Chargement : `build_head('<chemin>/head.pt')` (`h_jepa/cost_heads.py`,
   nécessite `h_jepa` dans le `PYTHONPATH`). Pour planifier avec une tête :
   `bash h_jepa/scripts/cost_heads/job.sh plan pusht_flat <seed> <chemin>/head.pt <nom>`.
+- **World models entraînés conjointement** : `checkpoints/wm_joint/<nom>/seed<s>/<nom>_object.ckpt`
+  (15 checkpoints de 93–95 Mo, non versionnés : `.gitignore`). Ils sont chargeables comme
+  `policy=` dans `eval.py` ; journaux d'entraînement dans `results/cost_heads/pusht/wm_runs/`.
 
 ## Reproduire
 

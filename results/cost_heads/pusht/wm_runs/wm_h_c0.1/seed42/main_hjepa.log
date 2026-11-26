@@ -1,0 +1,76 @@
+[2026-11-24 18:58:52,517][root][INFO] - Cached 'action' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-24 18:58:52,552][root][INFO] - Cached 'proprio' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-24 18:58:52,571][root][INFO] - Cached 'state' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-24 18:58:52,656][root][INFO] - Merged columns ['block_ori'] into 'block_ori' and cached it
+[2026-11-24 18:58:52,665][root][INFO] - Merged columns ['state[0:2]'] into 'agent_xy' and cached it
+[2026-11-24 18:58:52,673][root][INFO] - Merged columns ['state[2:4]'] into 'block_xy' and cached it
+[2026-11-24 18:58:52,682][root][INFO] - Merged columns ['state[5:7]'] into 'agent_vel' and cached it
+[2026-11-24 18:58:52,687][root][INFO] - Cached 'action' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-24 18:58:52,687][root][INFO] - Cached 'proprio' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-24 18:58:52,687][root][INFO] - Cached 'state' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-24 18:58:52,689][root][INFO] - Merged columns ['block_ori'] into 'block_ori' and cached it
+[2026-11-24 18:58:52,689][root][INFO] - Merged columns ['state[0:2]'] into 'agent_xy' and cached it
+[2026-11-24 18:58:52,689][root][INFO] - Merged columns ['state[2:4]'] into 'block_xy' and cached it
+[2026-11-24 18:58:52,689][root][INFO] - Merged columns ['state[5:7]'] into 'agent_vel' and cached it
+[2026-11-24 18:58:56,919][gcsfs][INFO] - gcsfs experimental features enabled via GCSFS_EXPERIMENTAL_ZB_HNS_SUPPORT.
+[2026-11-24 19:10:40,308][root][INFO] - Resume checkpoint after train batch 2000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 19:22:17,248][root][INFO] - Resume checkpoint after train batch 4000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 19:33:54,226][root][INFO] - Resume checkpoint after train batch 6000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 19:45:31,518][root][INFO] - Resume checkpoint after train batch 8000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 19:57:08,535][root][INFO] - Resume checkpoint after train batch 10000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 20:08:45,286][root][INFO] - Resume checkpoint after train batch 12000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 20:20:21,913][root][INFO] - Resume checkpoint after train batch 14000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 20:31:58,985][root][INFO] - Resume checkpoint after train batch 16000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 20:43:35,195][root][INFO] - Resume checkpoint after train batch 18000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 20:55:11,569][root][INFO] - Resume checkpoint after train batch 20000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:06:48,209][root][INFO] - Resume checkpoint after train batch 22000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:18:24,902][root][INFO] - Resume checkpoint after train batch 24000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:30:01,225][root][INFO] - Resume checkpoint after train batch 26000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:33:30,007][root][INFO] - Resume checkpoint after train batch 26585 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:33:30,066][root][INFO] - Saved world model to /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/wm_h_c0.1_epoch_1_object.ckpt
+[2026-11-24 21:41:45,045][root][INFO] - Resume checkpoint after train batch 28000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 21:53:21,327][root][INFO] - Resume checkpoint after train batch 30000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 22:04:57,555][root][INFO] - Resume checkpoint after train batch 32000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 22:16:39,798][root][INFO] - Resume checkpoint after train batch 34000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 22:28:20,250][root][INFO] - Resume checkpoint after train batch 36000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 22:40:00,819][root][INFO] - Resume checkpoint after train batch 38000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 22:51:37,819][root][INFO] - Resume checkpoint after train batch 40000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 23:03:14,985][root][INFO] - Resume checkpoint after train batch 42000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 23:14:52,393][root][INFO] - Resume checkpoint after train batch 44000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 23:26:29,401][root][INFO] - Resume checkpoint after train batch 46000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 23:38:06,042][root][INFO] - Resume checkpoint after train batch 48000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-24 23:49:42,972][root][INFO] - Resume checkpoint after train batch 50000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 00:01:19,820][root][INFO] - Resume checkpoint after train batch 52000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 00:08:11,916][root][INFO] - Resume checkpoint after train batch 53170 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 00:08:11,988][root][INFO] - Saved world model to /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/wm_h_c0.1_epoch_2_object.ckpt
+[2026-11-25 00:13:02,818][root][INFO] - Resume checkpoint after train batch 54000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 00:24:39,606][root][INFO] - Resume checkpoint after train batch 56000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 18:03:43,543][root][INFO] - Cached 'action' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-25 18:03:43,663][root][INFO] - Cached 'proprio' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-25 18:03:43,741][root][INFO] - Cached 'state' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_train.h5'
+[2026-11-25 18:03:43,830][root][INFO] - Merged columns ['block_ori'] into 'block_ori' and cached it
+[2026-11-25 18:03:43,839][root][INFO] - Merged columns ['state[0:2]'] into 'agent_xy' and cached it
+[2026-11-25 18:03:43,847][root][INFO] - Merged columns ['state[2:4]'] into 'block_xy' and cached it
+[2026-11-25 18:03:43,856][root][INFO] - Merged columns ['state[5:7]'] into 'agent_vel' and cached it
+[2026-11-25 18:03:43,858][root][INFO] - Cached 'action' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-25 18:03:43,858][root][INFO] - Cached 'proprio' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-25 18:03:43,858][root][INFO] - Cached 'state' from '/tmp/joachim.bertrand/hjepa_wm/pusht_expert_val.h5'
+[2026-11-25 18:03:43,860][root][INFO] - Merged columns ['block_ori'] into 'block_ori' and cached it
+[2026-11-25 18:03:43,860][root][INFO] - Merged columns ['state[0:2]'] into 'agent_xy' and cached it
+[2026-11-25 18:03:43,860][root][INFO] - Merged columns ['state[2:4]'] into 'block_xy' and cached it
+[2026-11-25 18:03:43,860][root][INFO] - Merged columns ['state[5:7]'] into 'agent_vel' and cached it
+[2026-11-25 18:03:47,637][gcsfs][INFO] - gcsfs experimental features enabled via GCSFS_EXPERIMENTAL_ZB_HNS_SUPPORT.
+[2026-11-25 18:15:31,867][root][INFO] - Resume checkpoint after train batch 58000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 18:27:10,327][root][INFO] - Resume checkpoint after train batch 60000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 18:38:49,007][root][INFO] - Resume checkpoint after train batch 62000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 18:50:27,634][root][INFO] - Resume checkpoint after train batch 64000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 19:02:06,133][root][INFO] - Resume checkpoint after train batch 66000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 19:13:44,730][root][INFO] - Resume checkpoint after train batch 68000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 19:25:22,699][root][INFO] - Resume checkpoint after train batch 70000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 19:37:00,289][root][INFO] - Resume checkpoint after train batch 72000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 19:48:37,725][root][INFO] - Resume checkpoint after train batch 74000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 20:00:16,063][root][INFO] - Resume checkpoint after train batch 76000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 20:11:54,428][root][INFO] - Resume checkpoint after train batch 78000 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 20:22:13,522][root][INFO] - Resume checkpoint after train batch 79755 -> /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/lightning_resume/last.ckpt
+[2026-11-25 20:22:13,583][root][INFO] - Saved world model to /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/wm_h_c0.1_epoch_3_object.ckpt
+[2026-11-25 20:22:13,642][root][INFO] - Saved final world model to /tmp/joachim.bertrand/hjepa_wm/ckpts/pusht/wm_h_c0.1/seed42/wm_h_c0.1_object.ckpt
